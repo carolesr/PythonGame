@@ -16,7 +16,7 @@ screen_width = 800
 screen_heigth = 600
 size = (screen_width, screen_heigth)
 keys = { 'up':False, 'down':False, 'left':False, 'right':False}
-ground = 700
+ground = 400
 
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("THE GAME")
@@ -59,22 +59,26 @@ def get_pressed_keys(event, end):
 ### MAIN LOOP ########################################################################################
 
 end = False
-direction = 'stop'
-key_down = False
+hit_ground = False
 while not end:
     for event in pygame.event.get():
         end = get_pressed_keys(event, end)
         
-    if(keys['up']):
+    if keys['up']:
         player1.move(0,-5,screen)
-    if(keys['down']):
+    if keys['down'] and not hit_ground:
         player1.move(0,5,screen)
-    if(keys['left']):
+    if keys['left']:
         player1.move(-5,0,screen)
-    if(keys['right']):
+    if keys['right']:
         player1.move(5,0,screen)
+
+    if player1.y >= ground:
+        hit_ground = True
+    else:
+        hit_ground = False
         
-    screen.blit(pygame.image.load("background.jpg"), (0,-80))
+    screen.blit(pygame.image.load("background2.jpg"), (0,-80))
     player1.show_image(screen)
     pygame.display.update()
     # pygame.display.flip()
