@@ -49,7 +49,6 @@ while not end:
                 direction = 'm_right'
         elif event.type == pygame.KEYUP:
             key_down = False
-            print('key_up')
             direction == 'stop'
 
         print(direction + ' ' + str(key_down))
