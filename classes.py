@@ -35,5 +35,4 @@ class Player(Entity):
     def move(self, dx, dy,screen):
         self.x += dx
         self.y += dy
-        print('reprinting')
         self.show_image(screen)

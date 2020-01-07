@@ -15,18 +15,46 @@ else:
 screen_width = 800
 screen_heigth = 600
 size = (screen_width, screen_heigth)
+keys = { 'up':False, 'down':False, 'left':False, 'right':False}
+ground = 700
 
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("THE GAME")
 
 ### OBJECTS #########################################################################################
 
-obj1 = cl.Entity(100, 100, "bola.png")
-player1  = cl.Player(200, 200, "mickey.png", "Mickey")
+player1 = cl.Player(200, 200, "mickey.png", "Mickey")
 player1.speak("hóhó")
 
-obj1.resize_image(100, 100)
 player1.resize_image(100, 100)
+
+### FUNCTIONS ########################################################################################
+
+def get_pressed_keys(event, end):
+        if event.type == pygame.QUIT:
+            end = True
+        elif event.type == pygame.KEYDOWN:
+            pressed = pygame.key.get_pressed()        
+            if pressed[pygame.K_UP]:
+                keys['up'] = True        
+            if pressed[pygame.K_DOWN]:
+                keys['down'] =  True
+            if pressed[pygame.K_LEFT]:
+                keys['left'] = True
+            if pressed[pygame.K_RIGHT]:
+                keys['right'] = True
+
+        elif event.type == pygame.KEYUP:
+            pressed = pygame.key.get_pressed()        
+            if not pressed[pygame.K_UP]:
+                keys['up'] = False        
+            if not pressed[pygame.K_DOWN]:
+                keys['down'] =  False
+            if not pressed[pygame.K_LEFT]:
+                keys['left'] = False
+            if not pressed[pygame.K_RIGHT]:
+                keys['right'] = False
+        return end
 
 ### MAIN LOOP ########################################################################################
 
@@ -35,46 +63,18 @@ direction = 'stop'
 key_down = False
 while not end:
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            end = True
-        elif event.type == pygame.KEYDOWN:
-            key_down = True
-            keys = pygame.key.get_pressed()        
-            if keys[pygame.K_UP]:
-                direction = 'm_up'      
-            elif keys[pygame.K_DOWN]:
-                direction = 'm_down'
-            elif keys[pygame.K_LEFT]:
-                direction = 'm_left'
-            elif keys[pygame.K_RIGHT]:
-                direction = 'm_right'
-
-            # if event.key == pygame.K_UP:
-            #     direction = 'm_up'         
-            # elif event.key == pygame.K_DOWN:
-            #     direction = 'm_down'
-            # elif event.key == pygame.K_LEFT:
-            #     direction = 'm_left'
-            # elif event.key == pygame.K_RIGHT:
-            #     direction = 'm_right'
-        elif event.type == pygame.KEYUP:
-            key_down = False
-            direction == 'stop'
-
-    if key_down:
-        if(direction == 'm_up'):
-            player1.move(0,-5,screen)
-        elif(direction == 'm_down'):
-            player1.move(0,5,screen)
-        elif(direction == 'm_left'):
-            player1.move(-5,0,screen)
-        elif(direction == 'm_right'):
-            player1.move(5,0,screen)
-
-    print(direction + ' ' + str(key_down))
+        end = get_pressed_keys(event, end)
+        
+    if(keys['up']):
+        player1.move(0,-5,screen)
+    if(keys['down']):
+        player1.move(0,5,screen)
+    if(keys['left']):
+        player1.move(-5,0,screen)
+    if(keys['right']):
+        player1.move(5,0,screen)
         
     screen.blit(pygame.image.load("background.jpg"), (0,-80))
-    obj1.show_image(screen)
     player1.show_image(screen)
     pygame.display.update()
     # pygame.display.flip()
