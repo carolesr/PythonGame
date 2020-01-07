@@ -39,31 +39,40 @@ while not end:
             end = True
         elif event.type == pygame.KEYDOWN:
             key_down = True
-            if event.key == pygame.K_UP:
-                direction = 'm_up'         
-            elif event.key == pygame.K_DOWN:
+            keys = pygame.key.get_pressed()        
+            if keys[pygame.K_UP]:
+                direction = 'm_up'      
+            elif keys[pygame.K_DOWN]:
                 direction = 'm_down'
-            elif event.key == pygame.K_LEFT:
+            elif keys[pygame.K_LEFT]:
                 direction = 'm_left'
-            elif event.key == pygame.K_RIGHT:
+            elif keys[pygame.K_RIGHT]:
                 direction = 'm_right'
+
+            # if event.key == pygame.K_UP:
+            #     direction = 'm_up'         
+            # elif event.key == pygame.K_DOWN:
+            #     direction = 'm_down'
+            # elif event.key == pygame.K_LEFT:
+            #     direction = 'm_left'
+            # elif event.key == pygame.K_RIGHT:
+            #     direction = 'm_right'
         elif event.type == pygame.KEYUP:
             key_down = False
             direction == 'stop'
 
-        print(direction + ' ' + str(key_down))
+    if key_down:
+        if(direction == 'm_up'):
+            player1.move(0,-5,screen)
+        elif(direction == 'm_down'):
+            player1.move(0,5,screen)
+        elif(direction == 'm_left'):
+            player1.move(-5,0,screen)
+        elif(direction == 'm_right'):
+            player1.move(5,0,screen)
 
-        if key_down:
-            if(direction == 'm_up'):
-                player1.move(0,-5,screen)
-            elif(direction == 'm_down'):
-                player1.move(0,5,screen)
-            elif(direction == 'm_left'):
-                player1.move(-5,0,screen)
-            elif(direction == 'm_right'):
-                player1.move(5,0,screen)
-
-    # screen.fill(white)
+    print(direction + ' ' + str(key_down))
+        
     screen.blit(pygame.image.load("background.jpg"), (0,-80))
     obj1.show_image(screen)
     player1.show_image(screen)
