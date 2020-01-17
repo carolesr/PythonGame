@@ -25,12 +25,11 @@ class Entity:
             print("Error resizing image")
 
 class Player(Entity):
-    def __init__(self, x, y, image, name):
-        self.name = name
+    def __init__(self, x, y, image, jumping, hit_ground, speed):
+        self.jumping = jumping
+        self.hit_ground = hit_ground
+        self.speed = speed
         super().__init__(x, y, image)
-
-    def speak(self, sentence):
-        print(self.name + " said " + sentence)
 
     def move(self, dx, dy,screen):
         self.x += dx
