@@ -4,8 +4,7 @@ class Entity:
     def __init__(self, x, y, image):
         self.x = x
         self.y = y
-        self.image = self.load_image(image)#[0]
-        #self.surface = self.load_image(image)[1]
+        self.image = self.load_image(image)
 
     def load_image(self, image):
         try:
@@ -13,7 +12,7 @@ class Entity:
         except:
             print("Error loading " + image)
             raise SystemExit
-        return img #, img.get_rect()
+        return img
 
     def show_image(self, screen):
         screen.blit(self.image, (self.x, self.y))
@@ -35,3 +34,11 @@ class Player(Entity):
         self.x += dx
         self.y += dy
         self.show_image(screen)
+
+class Platform(Entity):
+    def __init__(self, x, y, image, speed, width, height):
+        self.speed = speed
+        self.width = width
+        self.height = height
+        super().__init__(x, y, image)
+        self.resize_image(width, height)
