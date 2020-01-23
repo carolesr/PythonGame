@@ -22,18 +22,21 @@ class Entity:
             self.image = pygame.transform.scale(self.image, (w, h))
         except:
             print("Error resizing image")
+    
+    def move(self, dx, dy,screen):
+        self.x += dx
+        self.y += dy
+        self.show_image(screen)
 
 class Player(Entity):
     def __init__(self, x, y, image, jumping, hit_ground, speed):
         self.jumping = jumping
         self.hit_ground = hit_ground
         self.speed = speed
+        self.last_plat = 0
+        self.count_plat = 0
         super().__init__(x, y, image)
 
-    def move(self, dx, dy,screen):
-        self.x += dx
-        self.y += dy
-        self.show_image(screen)
 
 class Platform(Entity):
     def __init__(self, x, y, image, speed, width, height):

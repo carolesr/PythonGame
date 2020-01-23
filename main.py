@@ -4,20 +4,34 @@ import time
 import pygame
 import classes as cl
 import random
+import math
 
 ### DEFINES ##########################################################################################
 
-screen_width = 800
-screen_heigth = 600
+screen_width = 640
+screen_heigth = 750
 size = (screen_width, screen_heigth)
 random.seed()
 
 keys = {'up': False, 'down': False, 'left': False, 'right': False}
 
-ground = 450
+ground = 550
 speed = 20
+screen_speed = 1
 
 platforms = []
+min_width = 150
+max_width = 200
+space_between = 170
+time_count = 180
+rand_step = 30
+
+# fases = []
+# fases.append({'speed':1,'time':180})
+# fases.append({'speed':2,'time':90})
+# fases.append({'speed':4,'time':45})
+# fases.append({'speed':8,'time':23})
+fases = [{'speed': math.pow(2, i), 'time': 200 / math.pow(2, i)} for i in range(4)]
 
 ### PYGAME INIT ######################################################################################
 
@@ -29,17 +43,27 @@ else:
 
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("THE GAME")
+font = pygame.font.Font('freesansbold.ttf', 32) 
+
 
 ### OBJECTS #########################################################################################
 
-player1 = cl.Player(200, ground, "bola.png", False, False, -1*speed)
-player1.resize_image(60, 60)
+y = 150
+x = 0
+for i in range(3):
+    w = random.randrange(min_width,max_width,rand_step)
+    x = random.randrange(x-300,x+300,rand_step)
+    if x < 0:
+        x = 0
+    if x > screen_width-w:
+        x = screen_width-w
+    platforms.append(cl.Platform(x, y, "platform.png", 0, w, 25))
+    y += space_between
 
-y = 0
-for i in range(4):
-    y += 100
-    x = random.randint(0, screen_width-150)
-    platforms.append(cl.Platform(x, y, "platform.png", 0, 150, 30))
+player1 = cl.Player(x, y-30, "bola.png", False, False, -1*speed)
+player1.resize_image(60, 60)
+player1.count_plat = 3
+player1.last_plat = x
 
 ### FUNCTIONS ########################################################################################
 
@@ -87,11 +111,11 @@ def jump():
     player1.move(0, player1.speed, screen)
 
 
-def check_colision(plat):
-    if ground-speed <= player1.y <= ground+speed:
-        player1.hit_ground = True
+def check_colision(plat, game_over):
+    if player1.y >= screen_heigth:
+        game_over = True
     else:
-        if (plat.x <= player1.x <= plat.x + plat.width) and (plat.y <= player1.y <= plat.y + plat.height):
+        if (plat.x-25 <= player1.x <= plat.x-25 + plat.width) and (plat.y <= player1.y <= plat.y + plat.height):
             player1.hit_ground = True
         else:
             player1.hit_ground = False
@@ -100,10 +124,33 @@ def check_colision(plat):
         pressed_jump()
         jump()
 
+    return game_over
+
+def get_rand_plat():
+    # x = random.randrange(0,screen_width-max_width,rand_step)
+    x = random.randrange(player1.x-250,player1.x+250,rand_step)
+    w = random.randrange(min_width,max_width,rand_step)
+    if x < 0:
+        x = 0
+    if x > screen_width-w:
+        x = screen_width-w
+    player1.last_plat = x
+    player1.count_plat += 1
+    return (x,w)
+
+def add_plat():
+    a = get_rand_plat()
+    x = a[0]
+    w = a[1]
+    platforms.append(cl.Platform(x, 150, "platform.png", 0, w, 25))
+    
 ### MAIN LOOP ########################################################################################
 
 
 end = False
+game_over = False
+count = 0
+player1.jumping = True
 while not end:
     for event in pygame.event.get():
         end = get_pressed_keys(event, end)
@@ -116,10 +163,43 @@ while not end:
         player1.move(5, 0, screen)
 
     for plat in platforms:
-        check_colision(plat)
+        game_over = check_colision(plat,game_over)
 
-    screen.blit(pygame.image.load("background2.jpg"), (0, -80))
-    player1.show_image(screen)
     for plat in platforms:
-        plat.show_image(screen)
+        plat.move(0,screen_speed,screen)
+        if plat.y > screen_heigth:
+            platforms.remove(plat)
+    count += 1
+
+    if not game_over:
+        if count == time_count:
+            count = 0
+            add_plat()
+
+    if player1.count_plat == 5:
+        screen_speed = fases[1]['speed']
+        time_count = fases[1]['time']
+    elif player1.count_plat == 15:
+        screen_speed = fases[2]['speed']
+        time_count = fases[2]['time']
+    elif player1.count_plat == 30:
+        screen_speed = fases[3]['speed']
+        time_count = fases[3]['time']
+
+    screen.blit(pygame.image.load("background.jpg"), (0, 0))
+    if not game_over:
+        player1.show_image(screen)
+        for plat in platforms:
+            plat.show_image(screen)
+    else:
+        text1 = font.render('GAME OVER', True, (255,255,255),(0,0,0))
+        textRect1 = text1.get_rect()
+        textRect1.center = (screen_width // 2, screen_heigth // 2 - 150)
+
+        text2 = font.render('SCORE: ' + str(player1.count_plat), True, (255,255,255),(0,0,0))
+        textRect2 = text2.get_rect()
+        textRect2.center = (screen_width // 2, screen_heigth // 2 - 100)
+
+        screen.blit(text1,textRect1)
+        screen.blit(text2,textRect2)
     pygame.display.update()
