@@ -9,7 +9,7 @@ import math
 ### DEFINES ##########################################################################################
 
 screen_width = 640
-screen_heigth = 750
+screen_heigth = 640
 size = (screen_width, screen_heigth)
 random.seed()
 
